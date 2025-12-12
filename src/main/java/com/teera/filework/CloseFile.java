@@ -2,39 +2,33 @@ package com.teera.filework;
 
 import com.teera.startpoint.InputContentArea;
 import com.teera.startpoint.WindowsShowcase;
-
 import java.util.concurrent.CompletableFuture;
 
 public class CloseFile
 {
     public static void close() throws InterruptedException
     {
-        if (UserFileProcessor.getUserFileName().isEmpty() &&
-                UserFileProcessor.getContent().toString().isEmpty())
-        {
-            return;
-        }
+        // Файл должен быть открыт, текущее содержание должно быть инициализировано, но при этом пустое.
+        if (UserFileProcessor.getUserFileName().isEmpty() && InputContentArea.getText() == null) return;
 
         UnsaveOpen unsaveOpen = new UnsaveOpen();
 
-        // Сначала запускаем диалоговое окно
+        // Сначала запускаем диалоговое окно.
         CompletableFuture<Boolean> confirmTask = unsaveOpen.confirmUnsave();
 
-        // Только получив положительный ответ, мы можем перейти к закрытию файла
+        // Только получив положительный ответ, мы можем перейти к закрытию файла.
         confirmTask.thenAccept(result ->
         {
             if (result)
             {
-                // Устанавливаем на место поля ввода
-                InputContentArea.getArea().clear();
+                // Обновляем данные.
+                InputContentArea.clearArea();
                 UserFileProcessor.init(null);
 
-                // Устанавливаем название
-                WindowsShowcase.getStage().setTitle("Безымянный");
+                UserFileProcessor.updateContent(new StringBuilder());
 
-                // Очищаем, чтобы не было несохраненных изменений
-                Pref.getPreferences().put(Pref.FILE_PATH, "");
-                Pref.getPreferences().put(Pref.FILE_CONTENT, "");
+                // Устанавливаем название.
+                WindowsShowcase.getStage().setTitle("Безымянный");
             }
         });
     }

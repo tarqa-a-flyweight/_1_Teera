@@ -1,8 +1,7 @@
 package com.teera.startpoint;
 
-import static com.teera.debug.ProgramLog.logger;
-
 import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 import com.teera.filework.Pref;
 import com.teera.filework.UserFileProcessor;
@@ -12,34 +11,66 @@ public class InputContentArea
 {
     private static InlineCssTextArea styledTextArea;
 
-    // Инициализация как только сможем загрузить содержание файла
+    private static Appendable innerContent;
+
+    /**
+     * Управление поведением TextArea при изменении содержимого файла
+     */
     public static void init()
     {
-        String text;
-        if (UserFileProcessor.getContent().toString() == null)
+        styledTextArea = new InlineCssTextArea("");
+
+        styledTextArea.textProperty().addListener(ob ->
+                {
+                    /// Не полный текст обрабатывается
+                    innerContent = new StringBuilder(styledTextArea.getText());
+
+                    // Изменения обозначаем звездочкой
+                    if (WindowsShowcase.getStage() != null
+                            && !WindowsShowcase.getStage().getTitle().contains("*")
+                            && !getText().toString().equals(UserFileProcessor.getContent().toString())
+                    )
+                    {
+                        WindowsShowcase.getStage().setTitle("*" + WindowsShowcase.getStage().getTitle());
+                    }
+                }
+        );
+
+    }
+
+
+    /// Ограничение размера текста, выводимого пользователю
+    public static void setAreaText(Appendable text)
+    {
+        innerContent = text;
+
+        styledTextArea.replaceText(innerContent.toString());
+    }
+
+    public static Appendable getText()
+    {
+        if (innerContent != null)
         {
-            text = "";
+            return innerContent;
         } else
         {
-            text = UserFileProcessor.getContent().toString();
+            return new StringBuilder();
         }
-
-        styledTextArea = new InlineCssTextArea(text);
     }
 
-    // Добавление textArea в основное окно
-    public static InlineCssTextArea getArea()
+    public static void clearArea()
     {
-        return styledTextArea;
+        styledTextArea.clear();
+        innerContent = null;
     }
 
-    // Установка стиля по умолчанию, пока форматирование только меняет интервалы
+
     public static void setDefaultStyle()
     {
         styledTextArea.setWrapText(true);
 
-        styledTextArea.setPrefHeight(WindowsShowcase.getAreaSceneHeight() * 0.85);
-        styledTextArea.setPrefWidth(WindowsShowcase.getAreaSceneWidth() * 0.97);
+        styledTextArea.setPrefHeight(WindowsShowcase.AREA_SCENE_HEIGHT * 0.85);
+        styledTextArea.setPrefWidth(WindowsShowcase.AREA_SCENE_WIDTH * 0.97);
 
         setAreaLeading(Integer.parseInt(Pref.getPreferences().get(Pref.LEADING, String.valueOf(ProgramFormatSetter.DEFAULT_LEADING))));
 
@@ -48,6 +79,8 @@ public class InputContentArea
 
     public static void setAreaLeading(int size)
     {
+        Appendable currentContent = getText();
+
         String spacingCommand = "-fx-line-spacing: " + size + "px;";
         String fontCommand = "-fx-font-family: Aptos, sans-serif;\n-fx-font-size: 16px;";
 
@@ -56,6 +89,11 @@ public class InputContentArea
         styledTextArea.setParagraphInsertionStyle(spacingCommand);
         styledTextArea.setStyle(fontCommand);
 
-        styledTextArea.replaceText(UserFileProcessor.getContent().toString());
+        if (currentContent != null) setAreaText(currentContent);
+    }
+
+    public static void setAreaOnGridPane(GridPane nodeRoot, int v, int v1)
+    {
+        nodeRoot.add(styledTextArea, v, v1);
     }
 }

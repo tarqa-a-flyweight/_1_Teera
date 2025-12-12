@@ -1,5 +1,6 @@
 package com.teera.filework;
 
+import com.teera.startpoint.InputContentArea;
 import com.teera.startpoint.WindowsShowcase;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -18,9 +19,8 @@ public class UnsaveOpen
         CompletableFuture<Boolean> task = new CompletableFuture<>();
 
         // Проверка на несохраненные изменения
-        if (!Pref.getPreferences().get(Pref.FILE_CONTENT, "").isEmpty())
+        if (!InputContentArea.getText().toString().equals(UserFileProcessor.getContent().toString()))
         {
-
             Dialog<Void> dialog = new Dialog<>();
             DialogPane dialogPane = dialog.getDialogPane();
 
@@ -67,7 +67,8 @@ public class UnsaveOpen
 
             dialog.setDialogPane(dialogPane);
             dialog.show();
-        } else {
+        } else
+        {
             task.complete(true);
         }
 

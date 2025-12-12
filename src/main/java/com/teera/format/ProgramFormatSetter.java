@@ -8,7 +8,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-// Кнопка или просто оболочка?
 public class ProgramFormatSetter
 {
     public static final double DEFAULT_LEADING = 0;

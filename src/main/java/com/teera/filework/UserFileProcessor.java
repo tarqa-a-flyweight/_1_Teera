@@ -7,23 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
- * UserFileProcessor выполняет доступ к файлу пользователя
- * Сейчас механизм сырой, поскольку программа не может обрабатывать большие объемы
- * данных. Выдает ошибку, если открыть файл больше обычного (например, "массив_данных").
+ *
+ * UserFileProcessor выполняет доступ к файлу пользователя, производит чтение и запись.
  */
 public class UserFileProcessor
 {
-    /// Поле файла пользователя
     private static File userFile;
-
-    /// Поле содержания файла пользователя
     private static Appendable userFileContent;
 
-    /**
-     * Инициализация происходит при открытии файла, поэтому она происходит не сразу.
-     *
-     * @param file является файлом, указанным пользователем.
-     */
+
     public static void init(File file)
     {
         userFile = file;
@@ -32,7 +24,8 @@ public class UserFileProcessor
     /**
      * Чтение происходит после открытия файла.
      *
-     * @return userFileContent возвращает объект для обработки содержания файла;
+     * @return userFileContent возвращает объект для обработки содержания файла.
+     *
      */
     public static Appendable read() throws IOException, InterruptedException
     {
@@ -58,15 +51,13 @@ public class UserFileProcessor
 
     /**
      * Запись в файл является частью процесса сохранения файла.
-     * Если файл не будет заранее открыт,
-     * потребуется его сначала открыть (или создать).
+     * Если файл не будет заранее открыт, потребуется его сначала открыть (или создать).
      *
      * @param content является строчным представлением нового содержания файла,
-     *                то есть измененный userFileContent; Внешнее сохранение в preferences
-     *                никогда не записывается в файл. Допустимо только инициализировать
-     *                userFileContent значением из памяти, но никак не записывать;
+     *                то есть измененный userFileContent.
+     *
      */
-    public static void write(String content) throws IOException, InterruptedException
+    public static void write(String content) throws InterruptedException
     {
         Thread thread = new Thread(() ->
         {
@@ -85,47 +76,43 @@ public class UserFileProcessor
     }
 
     /**
-     * @return возвращает текущее содержание файла. Может потребоваться при
-     * сохранении файла, поскольку заглавный объект userFileContent остался
-     * в файле чтения файла. Чтобы его не передавать можно воспользоваться этим методом;
+     * @return userFileContent последнее сохраненное содержание файла.
+     * Нужно для сравнения с текущим содержанием.
      */
     public static Appendable getContent()
     {
-        return userFileContent;
+        if (userFileContent != null)
+        {
+            return userFileContent;
+        } else
+        {
+            return new StringBuilder();
+        }
     }
 
     /**
      * Данный метод обновляет текущее содержание файла без записи
      * (потенциальное содержание);
      *
-     * @param str новое содержание. Подразумевается, что метод будет работать с
-     *            получением текста из поля ввода TextArea в оперативном режиме;
+     * @param str новое содержание файла.
+     *            Требуется для обновления содержания при сохранении.
      */
-    public static void updateContent(String str)
+    public static Appendable updateContent(Appendable str)
     {
-        userFileContent = new StringBuilder(str);
+        userFileContent = str;
+
+        return userFileContent;
     }
 
     /**
-     * @return currentFileName возвращает имя текущего файла, либо ничего не возвращает;
-     * Можно использовать для обновления заголовка окна и быстрой проверки наличия файла;
+     * @return currentFileName возвращает имя текущего файла, либо ничего не возвращает.
+     * Нужно использовать для обновления заголовка окна и быстрой проверки наличия файла.
      */
     public static String getUserFileName()
     {
         if (userFile != null)
         {
             return userFile.getName();
-        } else
-        {
-            return "";
-        }
-    }
-
-    public static String getUserFilePath()
-    {
-        if (userFile != null)
-        {
-            return userFile.getAbsolutePath();
         } else
         {
             return "";

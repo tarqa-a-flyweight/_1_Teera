@@ -1,7 +1,7 @@
 package com.teera.filework;
 
+import com.teera.startpoint.InputContentArea;
 import com.teera.startpoint.WindowsShowcase;
-
 import java.io.IOException;
 
 public class SaveFile
@@ -9,22 +9,21 @@ public class SaveFile
 
     public static void save() throws IOException, InterruptedException
     {
-        // Проверка наличия файла сохранения
+        // Проверка наличия файла сохранения.
         if (UserFileProcessor.getUserFileName().isEmpty())
         {
             UserFileProcessor.init(OpenFile.chooseFile());
         }
 
-        // Задача выполнена!
         if (!UserFileProcessor.getUserFileName().isEmpty())
         {
-            UserFileProcessor.write(UserFileProcessor.getContent().toString());
+            Appendable content = UserFileProcessor.updateContent(InputContentArea.getText());
 
-            // Убираем значок несохраненных изменений
+            // Сохраняем изменения во внутреннее хранилище и в файл.
+            UserFileProcessor.write(content.toString());
+
+            // Убираем значок несохраненных изменений.
             WindowsShowcase.getStage().setTitle(UserFileProcessor.getUserFileName());
-
-            Pref.getPreferences().put(Pref.FILE_PATH, "");
-            Pref.getPreferences().put(Pref.FILE_CONTENT, "");
         }
     }
 }

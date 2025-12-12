@@ -1,6 +1,5 @@
 package com.teera.filework;
 
-import com.teera.debug.ProgramLog;
 import com.teera.startpoint.InputContentArea;
 import com.teera.startpoint.WindowsShowcase;
 import javafx.stage.FileChooser;
@@ -9,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 public class OpenFile
 {
@@ -28,33 +26,36 @@ public class OpenFile
             if (result)
             {
                 // Инициализируем
-                UserFileProcessor.init(chooseFile());
-                // Если выбор сделан
+                File file = chooseFile();
+
+                if (file != null)
+                {
+                    UserFileProcessor.init(file);
+                } else
+                {
+                     return;
+                }
+
+                // Если выбор сделан:
+                Appendable userContent;
                 if (!UserFileProcessor.getUserFileName().isEmpty())
                 {
                     try
                     {
                         // Читаем
-                        UserFileProcessor.read();
+                        userContent = UserFileProcessor.read();
+
                         // Добавляем интервалы
-                        ProgramLog.logger.fine("Заходит в применение стиля");
                         InputContentArea.setDefaultStyle();
-                        ProgramLog.logger.fine("Вышел из применения стиля!");
                     } catch (IOException | InterruptedException e)
                     {
                         throw new RuntimeException(e);
                     }
                     // Устанавливаем на место поля ввода
-                    ProgramLog.logger.fine("" + UserFileProcessor.getContent().toString().isEmpty());
-
-                    InputContentArea.getArea().replaceText(UserFileProcessor.getContent().toString());
+                    InputContentArea.setAreaText(userContent);
 
                     // Устанавливаем название
                     WindowsShowcase.getStage().setTitle(UserFileProcessor.getUserFileName());
-
-                    // Очищаем, чтобы не было несохраненных изменений
-                    Pref.getPreferences().put(Pref.FILE_PATH, "");
-                    Pref.getPreferences().put(Pref.FILE_CONTENT, "");
                 }
             }
         });
