@@ -1,5 +1,6 @@
 package com.teera.startpoint;
 
+import com.teera.debug.ProgramLog;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import org.fxmisc.richtext.InlineCssTextArea;
@@ -7,11 +8,24 @@ import com.teera.filework.Pref;
 import com.teera.filework.UserFileProcessor;
 import com.teera.format.ProgramFormatSetter;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
 public class InputContentArea
 {
+    private static final int SYMBOLS_IN_LINE = 84;
+    private static final int TEXT_BORDER_SIZE = SYMBOLS_IN_LINE * 50;
+
     private static InlineCssTextArea styledTextArea;
 
+    /// Для малого текста (< TEXT_BORDER_SIZE)
     private static Appendable innerContent;
+
+    /// Для большого текста (> TEXT_BORDER_SIZE)
+    private static List<String> chunks;
+    private static ListIterator<String> chuncksIterator;
+
 
     /**
      * Управление поведением TextArea при изменении содержимого файла
@@ -22,8 +36,29 @@ public class InputContentArea
 
         styledTextArea.textProperty().addListener(ob ->
                 {
-                    /// Не полный текст обрабатывается
-                    innerContent = new StringBuilder(styledTextArea.getText());
+
+                    /// Если работаем с итератором (borderSizeIterator = null), должны примести его к innerContent
+                    if (chuncksIterator != null)
+                    {
+                        ProgramLog.logger.fine("Обновление innerContent...");
+
+
+                        Appendable currentContent = new StringBuilder(styledTextArea.getText());
+                        chuncksIterator.set(currentContent.toString());
+
+                        ProgramLog.logger.fine("previousIndex=" + chuncksIterator.previousIndex()
+                                + "\tnextIndex=" + chuncksIterator.nextIndex()
+                                + "\tcurrentContent size: " + currentContent.toString().length());
+
+                        innerContent = chunksToBuilder();
+
+                    } else
+                    {
+                        ProgramLog.logger.fine("-> Запускается обработка малого текста...");
+                        innerContent = new StringBuilder(styledTextArea.getText());
+                    }
+
+                    ProgramLog.logger.fine("innerContent size: " + innerContent.toString().length());
 
                     // Изменения обозначаем звездочкой
                     if (WindowsShowcase.getStage() != null
@@ -44,24 +79,104 @@ public class InputContentArea
     {
         innerContent = text;
 
-        styledTextArea.replaceText(innerContent.toString());
-    }
+        String textStr = text.toString();
 
-    public static Appendable getText()
-    {
-        if (innerContent != null)
+        ProgramLog.logger.fine("text size: " + textStr.length());
+
+        if (textStr.length() < TEXT_BORDER_SIZE)
         {
-            return innerContent;
+            chuncksIterator = null;
+            styledTextArea.replaceText(innerContent.toString());
         } else
         {
-            return new StringBuilder();
+            chunks = new LinkedList<>();
+
+            // Разделяем на кусочки по 1000 символов и остаток
+            for (int i = 1; i < textStr.length() / TEXT_BORDER_SIZE + 1; i++)
+            {
+                if (i * TEXT_BORDER_SIZE > textStr.length())
+                {
+                    chunks.add(textStr.substring((i - 1) * TEXT_BORDER_SIZE));
+                } else
+                {
+                    chunks.add(textStr.substring((i - 1) * TEXT_BORDER_SIZE, i * TEXT_BORDER_SIZE));
+                }
+
+                ProgramLog.logger.fine("border list size: " + chunks.size());
+            }
+
+            chuncksIterator = chunks.listIterator();
+            styledTextArea.replaceText(chuncksIterator.next());
+
+            styledTextArea.caretPositionProperty().addListener(cl ->
+            {
+
+                int caretPos = styledTextArea.getCaretPosition();
+                ProgramLog.logger.fine("caretPos: " + caretPos);
+
+                /// Если пересекает границу, то нас интересует только направление
+                if (caretPos == styledTextArea.getText().length() - 1)
+                {
+                    if (chuncksIterator.hasNext())
+                    {
+                        styledTextArea.replaceText(chuncksIterator.next());
+                    }
+                } else if (caretPos == 0)
+                {
+                    if (chuncksIterator.hasPrevious())
+                    {
+                        styledTextArea.replaceText(chuncksIterator.previous());
+                    }
+                }
+
+            });
+
         }
     }
 
+    /// Большой текст сохраняется другим способом
+    public static Appendable getText()
+    {
+        if (chuncksIterator == null)
+        {
+            if (innerContent != null)
+            {
+                return innerContent;
+            } else
+            {
+                return new StringBuilder();
+            }
+        } else
+        {
+            return chunksToBuilder();
+        }
+    }
+
+    ///  Итератор очищается
     public static void clearArea()
     {
         styledTextArea.clear();
         innerContent = null;
+
+        if (chuncksIterator != null)
+        {
+            chunks = null;
+            chuncksIterator = null;
+        }
+    }
+
+    private static Appendable chunksToBuilder()
+    {
+        ListIterator<String> builderIterator = chunks.listIterator();
+
+        StringBuilder parentContent = new StringBuilder();
+
+        while (builderIterator.hasNext())
+        {
+            parentContent.append(builderIterator.next());
+        }
+
+        return parentContent;
     }
 
 
@@ -72,7 +187,7 @@ public class InputContentArea
         styledTextArea.setPrefHeight(WindowsShowcase.AREA_SCENE_HEIGHT * 0.85);
         styledTextArea.setPrefWidth(WindowsShowcase.AREA_SCENE_WIDTH * 0.97);
 
-        setAreaLeading(Integer.parseInt(Pref.getPreferences().get(Pref.LEADING, String.valueOf(ProgramFormatSetter.DEFAULT_LEADING))));
+        setAreaLeading(Pref.getPreferences().getInt(Pref.LEADING, ProgramFormatSetter.DEFAULT_LEADING));
 
         styledTextArea.requestLayout();
     }
@@ -89,7 +204,8 @@ public class InputContentArea
         styledTextArea.setParagraphInsertionStyle(spacingCommand);
         styledTextArea.setStyle(fontCommand);
 
-        if (currentContent != null) setAreaText(currentContent);
+        // Надо подумать, можно ли обойтись без этого
+        if (currentContent != null) styledTextArea.replaceText(currentContent.toString());
     }
 
     public static void setAreaOnGridPane(GridPane nodeRoot, int v, int v1)

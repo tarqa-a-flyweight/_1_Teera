@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
  * Teera - basic text editor (study project).
  *
  * @author tarqa-a-flyweight
- * @version 1.0 12-12-2025
+ * @version 1.0 13-12-2025
  */
 
 public class WindowsShowcase extends Application

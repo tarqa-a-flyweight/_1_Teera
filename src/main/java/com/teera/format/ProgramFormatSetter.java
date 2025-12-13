@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 
 public class ProgramFormatSetter
 {
-    public static final double DEFAULT_LEADING = 0;
+    public static final int DEFAULT_LEADING = 0;
 
     private static Button formatSetterButton = action();
     private static int leading;

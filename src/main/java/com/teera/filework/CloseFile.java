@@ -1,5 +1,6 @@
 package com.teera.filework;
 
+import com.teera.debug.ProgramLog;
 import com.teera.startpoint.InputContentArea;
 import com.teera.startpoint.WindowsShowcase;
 import java.util.concurrent.CompletableFuture;
@@ -27,6 +28,7 @@ public class CloseFile
 
                 UserFileProcessor.updateContent(new StringBuilder());
 
+                //ProgramLog.logger.fine("Закрываем файл, меняем название...");
                 // Устанавливаем название.
                 WindowsShowcase.getStage().setTitle("Безымянный");
             }
