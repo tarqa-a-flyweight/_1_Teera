@@ -22,13 +22,13 @@ public class CloseFile
         {
             if (result)
             {
-                // Обновляем данные.
+                // Чистим поле
                 InputContentArea.clearArea();
+
+                // Очищаем данные
+                UserFileProcessor.updateContent(new StringBuilder());
                 UserFileProcessor.init(null);
 
-                UserFileProcessor.updateContent(new StringBuilder());
-
-                //ProgramLog.logger.fine("Закрываем файл, меняем название...");
                 // Устанавливаем название.
                 WindowsShowcase.getStage().setTitle("Безымянный");
             }

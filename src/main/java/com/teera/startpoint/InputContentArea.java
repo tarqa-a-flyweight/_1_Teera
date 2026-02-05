@@ -36,7 +36,6 @@ public class InputContentArea
 
         styledTextArea.textProperty().addListener(ob ->
                 {
-
                     /// Если работаем с итератором (borderSizeIterator = null), должны примести его к innerContent
                     if (chuncksIterator != null)
                     {
@@ -86,13 +85,16 @@ public class InputContentArea
         if (textStr.length() < TEXT_BORDER_SIZE)
         {
             chuncksIterator = null;
+            styledTextArea.caretPositionProperty().addListener(cl ->
+            {
+            });
             styledTextArea.replaceText(innerContent.toString());
         } else
         {
             chunks = new LinkedList<>();
 
-            // Разделяем на кусочки по 1000 символов и остаток
-            for (int i = 1; i < textStr.length() / TEXT_BORDER_SIZE + 1; i++)
+            // Разделяем на кусочки (первые элементы), последний (элементы + 1) и остаток
+            for (int i = 1; i < textStr.length() / TEXT_BORDER_SIZE + 2; i++)
             {
                 if (i * TEXT_BORDER_SIZE > textStr.length())
                 {
@@ -156,13 +158,21 @@ public class InputContentArea
     public static void clearArea()
     {
         styledTextArea.clear();
-        innerContent = null;
 
         if (chuncksIterator != null)
         {
             chunks = null;
             chuncksIterator = null;
+            styledTextArea.caretPositionProperty().addListener(cl -> {});
         }
+
+        innerContent = null;
+
+        if (styledTextArea.getText() != null)
+        {
+            styledTextArea.clear();
+        }
+
     }
 
     private static Appendable chunksToBuilder()
