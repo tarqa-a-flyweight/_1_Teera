@@ -7,7 +7,7 @@ import java.io.IOException;
 
 /**
  * Teera - basic text editor (study project).
- * @author tarqa
+ * @author tarqa-a-flyweight
  * @version 0.1
  */
 
