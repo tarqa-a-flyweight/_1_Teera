@@ -1,4 +1,4 @@
-package com.teera.startpoint.teera;
+package com.teera.startpoint;
 
 import javafx.application.Application;
 
