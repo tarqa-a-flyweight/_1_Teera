@@ -39,3 +39,4 @@ build/
 .DS_Store
 src/main/java/com/teera/debug
 src/main/java/com/teera/startpoint/teera
+/.idea/inspectionProfiles/Project_Default.xml
