@@ -6,25 +6,26 @@ import com.teera.handlers.patterns.Observer;
 import com.teera.handlers.patterns.Visited;
 import com.teera.handlers.patterns.Visitor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class SaveButtonHandler implements Observer, Visitor
 {
-    Visited visited;
+    private Collection<Visited> visiteds = new ArrayList<>();
 
     @Override
     public void update(Observable observable)
     {
-        if (observable instanceof SaveButton saveButton)
-        {
+        /*
+            Не требуется знать состояние наблюдаемого объекта,
+            поскольку известно, какие действия от этого обработчика требуются
+         */
 
-        } else
-        {
-            throw new RuntimeException("Наблюдаемый объект не является SaveButton!");
-        }
     }
 
     @Override
     public void visit(Visited visited)
     {
-        this.visited = visited;
+        visiteds.add(visited);
     }
 }

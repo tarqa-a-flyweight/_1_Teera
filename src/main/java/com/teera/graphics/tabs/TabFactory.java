@@ -1,4 +1,4 @@
-package com.teera.graphics.components;
+package com.teera.graphics.tabs;
 
 import javafx.scene.control.Tab;
 

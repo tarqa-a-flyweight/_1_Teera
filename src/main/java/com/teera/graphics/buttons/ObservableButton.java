@@ -16,7 +16,8 @@ abstract public class ObservableButton extends Button implements Observable
         super(s);
     }
 
-    public Collection<Observer> observers()
+    // Метод не предназначен для переопределения в потомках
+    protected final Collection<Observer> observers()
     {
         return observers;
     }

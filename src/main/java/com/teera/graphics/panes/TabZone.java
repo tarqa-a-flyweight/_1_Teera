@@ -1,7 +1,7 @@
 package com.teera.graphics.panes;
 
-import com.teera.graphics.components.TextedTab;
-import com.teera.graphics.components.TabFactory;
+import com.teera.graphics.tabs.TextedTab;
+import com.teera.graphics.tabs.TabFactory;
 import com.teera.handlers.patterns.Visited;
 import com.teera.handlers.patterns.Visitor;
 import javafx.scene.control.Tab;

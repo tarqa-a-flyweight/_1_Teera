@@ -1,30 +1,33 @@
 package com.teera.handlers.buttonHandlers;
 
-import com.teera.graphics.buttons.OpenButton;
 import com.teera.handlers.patterns.Observable;
 import com.teera.handlers.patterns.Observer;
 import com.teera.handlers.patterns.Visited;
 import com.teera.handlers.patterns.Visitor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class OpenButtonHandler implements Observer, Visitor
 {
-    Visited visited;
+    private Collection<Visited> visiteds = new ArrayList<>();
 
     @Override
     public void update(Observable observable)
     {
-        if (observable instanceof OpenButton openButton)
-        {
+        /*
+            Не требуется знать состояние наблюдаемого объекта,
+            поскольку известно, какие действия от этого обработчика требуются
+         */
 
-        } else
-        {
-            throw new RuntimeException("Наблюдаемый объект не является OpenButton!");
-        }
+        // Сейчас (22.03) не имеет смысла что-то писать, поскольку
+        // нет нужных методов.
+        // Основная задача - написать все основные классы, с которыми происходит работа
     }
 
     @Override
     public void visit(Visited visited)
     {
-        this.visited = visited;
+        visiteds.add(visited);
     }
 }
