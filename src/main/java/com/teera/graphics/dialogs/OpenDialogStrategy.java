@@ -5,6 +5,7 @@ import com.teera.handlers.patterns.Visitor;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,11 +24,18 @@ public class OpenDialogStrategy implements Visited
 
     public Path openDialog()
     {
-        return fileChooser.showOpenDialog(window).toPath();
+        File file = fileChooser.showOpenDialog(window);
+        if (file == null)
+        {
+            return null;
+        } else
+        {
+            return file.toPath();
+        }
     }
 
     @Override
-    public void set(Visitor visitor)
+    public void addVisitor(Visitor visitor)
     {
         visitors.add(visitor);
         visitors.forEach(v -> v.visit(this));

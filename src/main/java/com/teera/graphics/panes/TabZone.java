@@ -1,5 +1,6 @@
 package com.teera.graphics.panes;
 
+import com.teera.debug.Logmas;
 import com.teera.graphics.tabs.TextedTab;
 import com.teera.graphics.tabs.TabFactory;
 import com.teera.handlers.patterns.Visited;
@@ -9,6 +10,7 @@ import javafx.scene.control.TabPane;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import static com.teera.debug.Logmas.*;
 
 public class TabZone extends TabPane implements Visited
 {
@@ -21,7 +23,7 @@ public class TabZone extends TabPane implements Visited
      */
 
     @Override
-    public void set(Visitor visitor)
+    public void addVisitor(Visitor visitor)
     {
         visitors.add(visitor);
         visitors.forEach(v -> v.visit(this));
@@ -29,9 +31,25 @@ public class TabZone extends TabPane implements Visited
 
     public void postContents(String contents)
     {
+        LOGGER.fine(contents);
+
+        // format: path@@@content
+        String[] s = contents.split("@@@");
+
         TabFactory factory = TabFactory.createFactory();
 
-        getTabs().add(factory.createTab(contents));
+        Tab newTab;
+
+        if (s.length == 0)
+        {
+            newTab = factory.createTab("");
+            newTab.setText("<Безымянный>");
+        } else {
+            newTab = factory.createTab(s[1]);
+            newTab.setText(s[0]);
+        }
+
+        getTabs().add(newTab);
     }
 
     /*

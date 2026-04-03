@@ -1,16 +1,26 @@
 package com.teera.startpoint;
 
+import com.teera.graphics.buttons.ObservableButton;
+import com.teera.graphics.buttons.OpenButton;
+import com.teera.graphics.buttons.SaveButton;
+import com.teera.graphics.dialogs.*;
+import com.teera.graphics.panes.TabZone;
+import com.teera.graphics.panes.TabZoneFactory;
+import com.teera.handlers.FileStore;
+import com.teera.handlers.FileStoreFactory;
+import com.teera.handlers.buttonHandlers.OpenButtonHandler;
+import com.teera.handlers.buttonHandlers.SaveButtonHandler;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 /**
  * Teera
- * @version 0.1 22-03-2026
+ * @version 0.2 03-04-2026
  * @author tarqa-a-flyweight
  */
 
@@ -20,18 +30,6 @@ public class Main extends Application
     public void start(Stage stage) throws IOException
     {
         /*
-        Для начала компоновки нужно:
-        - Написать абстрактные фабрики для стратегий
-        - Написать работу ChunkingStrategy
-        - Написать работу UnitStrategy
-        - Написать работу WrapStrategy
-
-        - Написать работу Input- и Output- Strategy
-        - Написать метод подтверждения UnsaveDialogStrategy
-
-        - Написать взаимодействие InnerScroll и TextZone
-
-        - Написать адресацию запросов от обработчиков
 
         После компоновки:
         - *Отладить программу (должна полностью соответствовать требованиям)
@@ -57,11 +55,46 @@ public class Main extends Application
          */
 
         stage.setTitle("Teera");
-        GridPane nodeRoot = new GridPane();
+        stage.setResizable(false);
+        GridPane nodeRoot = new GridPane(10, 10);
 
-        Scene scene = new Scene(nodeRoot, 300, 300);
+        Scene scene = new Scene(nodeRoot, 700, 450);
         stage.setScene(scene);
 
+        ObservableButton open = new OpenButton();
+        ObservableButton save = new SaveButton();
+
+        // Compose
+        HBox buttonsBox = new HBox(10);
+        buttonsBox.getChildren().addAll(open, save);
+
+        TabZoneFactory factory = TabZoneFactory.createFactory();
+        TabZone tabZone = factory.createTabPane();
+        tabZone.postContents("@@@");
+
+        // Handlers
+        OpenButtonHandler openButtonHandler = new OpenButtonHandler();
+        SaveButtonHandler saveButtonHandler = new SaveButtonHandler();
+        open.add(openButtonHandler);
+        save.add(saveButtonHandler);
+
+        FileStoreFactory fileStoreFactory = FileStoreFactory.createFactory();
+        FileStore filestore = fileStoreFactory.createFileStore();
+
+        DialogStrategyFactory dialogFactory = DialogStrategyFactory.createFactory();
+        OpenDialogStrategy openDialog = dialogFactory.createOpenDialog(stage);
+        SaveAsDialogStrategy saveAsDialog = dialogFactory.createSaveAsDialog(stage);
+
+        openButtonHandler.visit(tabZone);
+        openButtonHandler.visit(filestore);
+        openButtonHandler.visit(openDialog);
+
+        saveButtonHandler.visit(tabZone);
+        saveButtonHandler.visit(filestore);
+        saveButtonHandler.visit(saveAsDialog);
+
+        nodeRoot.add(buttonsBox, 0, 0);
+        nodeRoot.add(tabZone, 0, 1);
         stage.show();
     }
 }

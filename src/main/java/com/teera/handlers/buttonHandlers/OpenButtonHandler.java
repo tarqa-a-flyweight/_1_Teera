@@ -1,33 +1,67 @@
 package com.teera.handlers.buttonHandlers;
 
+import com.teera.files.IOStrategyFactory;
+import com.teera.files.InputStrategy;
+import com.teera.graphics.dialogs.OpenDialogStrategy;
+import com.teera.graphics.panes.TabZone;
+import com.teera.handlers.FileStore;
 import com.teera.handlers.patterns.Observable;
 import com.teera.handlers.patterns.Observer;
 import com.teera.handlers.patterns.Visited;
 import com.teera.handlers.patterns.Visitor;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class OpenButtonHandler implements Observer, Visitor
 {
-    private Collection<Visited> visiteds = new ArrayList<>();
+    // OpenDialogStrategy OR TabZone OR FileStore
+    private Collection<Visited> visitTargets = new ArrayList<>();
 
     @Override
     public void update(Observable observable)
     {
-        /*
-            Не требуется знать состояние наблюдаемого объекта,
-            поскольку известно, какие действия от этого обработчика требуются
-         */
+        Path path = null;
+        for (Visited visitTarget : visitTargets)
+        {
+            if (visitTarget instanceof OpenDialogStrategy openDialog)
+            {
+                path = openDialog.openDialog();
+                break;
+            }
+        }
 
-        // Сейчас (22.03) не имеет смысла что-то писать, поскольку
-        // нет нужных методов.
-        // Основная задача - написать все основные классы, с которыми происходит работа
+        if (path == null) return;
+
+        IOStrategyFactory factory =  IOStrategyFactory.createFactory();
+        InputStrategy in = factory.createInputStrategy();
+        String nextContent = in.read(path);
+
+        for (Visited visitTarget : visitTargets)
+        {
+            if (visitTarget instanceof TabZone tabZone)
+            {
+                tabZone.postContents(path + "@@@" + nextContent);
+                break;
+            }
+        }
+
+        for (Visited visitTarget : visitTargets)
+        {
+            if (visitTarget instanceof FileStore fileStore)
+            {
+                // Можно получать путь
+                fileStore.putContent(path, nextContent);
+                break;
+            }
+        }
+
     }
 
     @Override
     public void visit(Visited visited)
     {
-        visiteds.add(visited);
+        visitTargets.add(visited);
     }
 }

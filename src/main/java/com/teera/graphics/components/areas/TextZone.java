@@ -9,6 +9,8 @@ import java.util.Collection;
 
 public class TextZone extends TextArea implements Observable, TextComponent
 {
+    private final static int CHUNK_SIZE = 1000;
+
     private Collection<Observer> observers = new ArrayList<>();
 
     public TextZone(String contents)
@@ -17,8 +19,7 @@ public class TextZone extends TextArea implements Observable, TextComponent
 
         textProperty().addListener(observable ->
         {
-            // если текст больше того-то значения, вызываем alert и проводим
-            // повторное разбиение
+            if (getText().length() > CHUNK_SIZE) alert();
         });
     }
 

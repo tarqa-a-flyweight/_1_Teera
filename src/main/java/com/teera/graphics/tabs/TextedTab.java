@@ -4,6 +4,7 @@ import com.teera.graphics.components.scrolls.InnerScroll;
 import com.teera.graphics.components.scrolls.ScrollFactory;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import static com.teera.debug.Logmas.*;
 
 public class TextedTab extends Tab
 {
@@ -11,8 +12,10 @@ public class TextedTab extends Tab
 
     public TextedTab(String contents)
     {
+        LOGGER.fine(contents);
         ScrollFactory factory = ScrollFactory.createFactory();
         this.scroll = factory.createScroll(contents);
+        setContent(scroll);
     }
 
     public String getContents()

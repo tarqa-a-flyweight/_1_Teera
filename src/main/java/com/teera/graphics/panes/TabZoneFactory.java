@@ -1,12 +1,14 @@
 package com.teera.graphics.panes;
 
-import javafx.scene.control.TabPane;
-
-public class TabZoneFactory extends TabPaneFactory
+public class TabZoneFactory
 {
-    @Override
-    public TabPane createTabPane()
+    public static TabZoneFactory createFactory()
     {
-        return new TabZone();
+        return new TabZoneFactory();
+    }
+
+    public TabZone createTabPane()
+    {
+        return new DecorTabZone();
     }
 }
