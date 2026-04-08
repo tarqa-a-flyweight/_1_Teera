@@ -17,6 +17,7 @@ public class InputStrategy
             while (scanner.hasNext())
             {
                 result.append(scanner.nextLine());
+                if (scanner.hasNext()) result.append("\n");
             }
         } catch (IOException ioe)
         {

@@ -30,7 +30,15 @@ public class SaveButtonHandler implements Observer, Visitor
         {
             if (visitTarget instanceof TabZone tabZone)
             {
-                currentPath = Path.of(tabZone.currentTab().getText());
+                String name = tabZone.currentTab().getText();
+
+                try
+                {
+                    currentPath = Path.of(name);
+                } catch (Exception e)
+                {
+                }
+
                 currentContent = tabZone.getContents();
                 break;
             }
@@ -38,11 +46,6 @@ public class SaveButtonHandler implements Observer, Visitor
 
         if (currentContent == null) return;
 
-        // Проверка качества пути
-        if (!currentPath.isAbsolute()) currentPath = null;
-
-        // Проверяем, есть ли открытый файл для содержания
-        // Если нет (ни один файл не открыт), получаем путь из диалога сохранения
         if (currentPath == null)
         {
             for (Visited visitTarget : visitTargets)
@@ -78,6 +81,15 @@ public class SaveButtonHandler implements Observer, Visitor
         OutputStrategy out = factory.createOutputStrategy();
 
         out.write(currentContent, currentPath);
+
+        for (Visited visitTarget : visitTargets)
+        {
+            if (visitTarget instanceof TabZone tabZone)
+            {
+                tabZone.currentTab().setText(currentPath.toString());
+                break;
+            }
+        }
     }
 
     @Override

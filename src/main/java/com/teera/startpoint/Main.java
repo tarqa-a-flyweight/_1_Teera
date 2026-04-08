@@ -12,15 +12,15 @@ import com.teera.handlers.buttonHandlers.OpenButtonHandler;
 import com.teera.handlers.buttonHandlers.SaveButtonHandler;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
  * Teera
- * @version 0.2 03-04-2026
+ * @version 0.2 08-04-2026
  * @author tarqa-a-flyweight
  */
 
@@ -30,6 +30,16 @@ public class Main extends Application
     public void start(Stage stage) throws IOException
     {
         /*
+        Отображение в окне:
+        - Разбиение по предложениям
+        - Высота панели ввода не более установленной, чтобы не появлялось дополнительного скролла
+        - Если только один чанк - ширина панели ввода равна ширине, иначе -
+            меньше ширины сцены на ширину скролла.
+        - Учет компонентов:
+                -- если компонент в окне один: отображение без скролла и пустая
+                панель не удаляется из отображения;
+                -- если компонент не один: удаляются пустые компоненты,
+                а ширина панелей ввода уменьшается на величину скролла.
 
         После компоновки:
         - *Отладить программу (должна полностью соответствовать требованиям)
@@ -58,7 +68,8 @@ public class Main extends Application
         stage.setResizable(false);
         GridPane nodeRoot = new GridPane(10, 10);
 
-        Scene scene = new Scene(nodeRoot, 700, 450);
+        Scene scene = new Scene(nodeRoot, 700,
+                                          450);
         stage.setScene(scene);
 
         ObservableButton open = new OpenButton();
@@ -66,7 +77,8 @@ public class Main extends Application
 
         // Compose
         HBox buttonsBox = new HBox(10);
-        buttonsBox.getChildren().addAll(open, save);
+        Label sidePlaceLabel = new Label();
+        buttonsBox.getChildren().addAll(sidePlaceLabel, open, save);
 
         TabZoneFactory factory = TabZoneFactory.createFactory();
         TabZone tabZone = factory.createTabPane();
@@ -93,8 +105,8 @@ public class Main extends Application
         saveButtonHandler.visit(filestore);
         saveButtonHandler.visit(saveAsDialog);
 
-        nodeRoot.add(buttonsBox, 0, 0);
-        nodeRoot.add(tabZone, 0, 1);
+        nodeRoot.add(buttonsBox, 0, 1);
+        nodeRoot.add(tabZone, 0, 2);
         stage.show();
     }
 }

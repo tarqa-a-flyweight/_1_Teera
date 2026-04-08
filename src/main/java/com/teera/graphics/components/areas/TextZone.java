@@ -6,11 +6,10 @@ import javafx.scene.control.TextArea;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import static com.teera.chunks.ChunkingStrategyFactory.RESIZE_VALUE;
 
 public class TextZone extends TextArea implements Observable, TextComponent
 {
-    private final static int CHUNK_SIZE = 1000;
-
     private Collection<Observer> observers = new ArrayList<>();
 
     public TextZone(String contents)
@@ -19,7 +18,7 @@ public class TextZone extends TextArea implements Observable, TextComponent
 
         textProperty().addListener(observable ->
         {
-            if (getText().length() > CHUNK_SIZE) alert();
+            if (getText().length() > RESIZE_VALUE) alert();
         });
     }
 

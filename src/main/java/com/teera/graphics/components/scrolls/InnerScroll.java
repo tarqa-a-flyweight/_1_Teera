@@ -7,6 +7,7 @@ import com.teera.chunks.WrapStrategyFactory;
 import com.teera.graphics.components.areas.TextComponent;
 import com.teera.handlers.patterns.Observable;
 import com.teera.handlers.patterns.Observer;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
@@ -99,7 +100,7 @@ public class InnerScroll extends ScrollPane implements Observer
             }
         }
 
-        VBox compose = new VBox();
+        VBox compose = new VBox(5);
         compose.getChildren().addAll(nodes);
         setContent(compose);
     }
