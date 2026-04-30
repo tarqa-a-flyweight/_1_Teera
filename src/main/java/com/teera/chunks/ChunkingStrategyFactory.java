@@ -12,6 +12,6 @@ public class ChunkingStrategyFactory
 
     public ChunkingStrategy createChunkingStrategy()
     {
-        return new ChunkingStrategy();
+        return new ParagraphChunker();
     }
 }

@@ -7,33 +7,26 @@ import com.teera.chunks.WrapStrategyFactory;
 import com.teera.graphics.components.areas.TextComponent;
 import com.teera.handlers.patterns.Observable;
 import com.teera.handlers.patterns.Observer;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import static com.teera.debug.Logmas.*;
+
+import static com.teera.debug.Logmas.LOGGER;
 
 public class InnerScroll extends ScrollPane implements Observer
 {
     public InnerScroll(String contents)
     {
-        LOGGER.fine(contents);
-        // За разделение и упаковку отвечают частные стратегии
-        // разбиения и упаковки, так что остается только вызывать соответствующие фабрики
         ChunkingStrategyFactory chunkingStrategyFactory = ChunkingStrategyFactory.createFactory();
         ChunkingStrategy chunker = chunkingStrategyFactory.createChunkingStrategy();
 
-        WrapStrategyFactory wrapStrategyFactory = WrapStrategyFactory.createFactory();
-        WrapStrategy wrapper = wrapStrategyFactory.createWrapStrategy();
-
-        // Для размещения узлов используется отдельный метод, который можно использовать повторно
-
         Collection<String> s = chunker.chunking(contents);
 
-        LOGGER.fine(s.size() + "");
+        WrapStrategyFactory wrapStrategyFactory = WrapStrategyFactory.createFactory();
+        WrapStrategy wrapper = wrapStrategyFactory.createWrapStrategy();
 
         Collection<TextComponent> c = wrapper.wrap(s);
 
@@ -74,15 +67,39 @@ public class InnerScroll extends ScrollPane implements Observer
         WrapStrategy wrapper = wrapStrategyFactory.createWrapStrategy();
 
         Collection<String> chunks = chunker.chunking(getContents());
+
         setNodes(wrapper.wrap(chunks));
     }
 
     private void setNodes(Collection<TextComponent> components)
     {
+        if (components.size() == 1)
+        {
+            TextComponent c = components.iterator().next();
+            if (c instanceof Node node)
+            {
+                setContent(node);
+            } else
+            {
+                throw new RuntimeException("Текстовый компонент не является узлом!");
+            }
+
+            if (c instanceof Observable observable)
+            {
+                observable.add(this);
+            } else
+            {
+                throw new RuntimeException("Узел не является наблюдаемым!");
+            }
+            return;
+        }
+
         Collection<Node> nodes = new ArrayList<>();
 
         for (TextComponent component : components)
         {
+            if (component.contents().isEmpty()) continue;
+
             if (component instanceof Node node)
             {
                 nodes.add(node);

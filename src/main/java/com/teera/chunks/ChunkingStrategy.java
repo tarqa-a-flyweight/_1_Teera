@@ -11,7 +11,6 @@ public class ChunkingStrategy
     public Collection<String> chunking(String contents)
     {
         // Интерпретатор: если опознан знак ###, добавляется новый лист
-        LOGGER.fine(contents);
         Collection<String> chunks = new ArrayList<>();
 
         if (contents.length() <= CHUNK_SIZE) chunks.add(contents);

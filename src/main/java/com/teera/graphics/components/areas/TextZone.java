@@ -18,7 +18,7 @@ public class TextZone extends TextArea implements Observable, TextComponent
 
         textProperty().addListener(observable ->
         {
-            if (getText().length() > RESIZE_VALUE) alert();
+            if (getText().length() > RESIZE_VALUE || getText().isEmpty()) alert();
         });
     }
 

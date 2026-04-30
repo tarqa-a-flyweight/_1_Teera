@@ -10,6 +10,7 @@ import javafx.scene.control.TabPane;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import static com.teera.debug.Logmas.*;
 
 public class TabZone extends TabPane implements Visited
@@ -40,12 +41,19 @@ public class TabZone extends TabPane implements Visited
 
         Tab newTab;
 
-        if (s.length == 0)
+        if (s.length < 2)
         {
             newTab = factory.createTab("");
-            newTab.setText("<Безымянный>");
-        } else {
+        } else
+        {
             newTab = factory.createTab(s[1]);
+        }
+
+        if (s.length == 0)
+        {
+            newTab.setText("<Безымянный>");
+        } else
+        {
             newTab.setText(s[0]);
         }
 
