@@ -12,7 +12,11 @@ public class ParagraphChunker extends ChunkingStrategy
     {
         Collection<String> chunks = new ArrayList<>();
 
-        if (contents.length() <= CHUNK_SIZE) chunks.add(contents);
+        if (contents.length() <= CHUNK_SIZE)
+        {
+            chunks.add(contents);
+            return chunks;
+        }
 
         /*
             Если абзацы нестандартные - разбиваем на предложения

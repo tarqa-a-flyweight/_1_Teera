@@ -12,7 +12,7 @@ public class TextedTab extends Tab
 
     public TextedTab(String contents)
     {
-        LOGGER.fine(contents);
+
         ScrollFactory factory = ScrollFactory.createFactory();
         this.scroll = factory.createScroll(contents);
         setContent(scroll);

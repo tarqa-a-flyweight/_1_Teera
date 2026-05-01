@@ -9,6 +9,6 @@ public class TabZoneFactory
 
     public TabZone createTabPane()
     {
-        return new DecorTabZone();
+        return new TabZone();
     }
 }

@@ -1,6 +1,5 @@
 package com.teera.graphics.panes;
 
-import com.teera.debug.Logmas;
 import com.teera.graphics.tabs.TextedTab;
 import com.teera.graphics.tabs.TabFactory;
 import com.teera.handlers.patterns.Visited;
@@ -32,8 +31,6 @@ public class TabZone extends TabPane implements Visited
 
     public void postContents(String contents)
     {
-        LOGGER.fine(contents);
-
         // format: path@@@content
         String[] s = contents.split("@@@");
 

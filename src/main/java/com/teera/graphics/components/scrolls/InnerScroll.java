@@ -4,11 +4,13 @@ import com.teera.chunks.ChunkingStrategy;
 import com.teera.chunks.ChunkingStrategyFactory;
 import com.teera.chunks.WrapStrategy;
 import com.teera.chunks.WrapStrategyFactory;
+import com.teera.graphics.Resizable;
 import com.teera.graphics.components.areas.TextComponent;
 import com.teera.handlers.patterns.Observable;
 import com.teera.handlers.patterns.Observer;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ public class InnerScroll extends ScrollPane implements Observer
 {
     public InnerScroll(String contents)
     {
+        //setFitToHeight(true);
+        setFitToWidth(true);
+
         ChunkingStrategyFactory chunkingStrategyFactory = ChunkingStrategyFactory.createFactory();
         ChunkingStrategy chunker = chunkingStrategyFactory.createChunkingStrategy();
 
@@ -37,6 +42,11 @@ public class InnerScroll extends ScrollPane implements Observer
     {
         StringBuilder result = new StringBuilder();
 
+        if (getContent() instanceof TextComponent textComponent)
+        {
+            result.append(textComponent.contents());
+        }
+
         if (getContent() instanceof VBox vBox)
         {
             for (Node child : vBox.getChildren())
@@ -44,16 +54,10 @@ public class InnerScroll extends ScrollPane implements Observer
                 if (child instanceof TextComponent textComponent)
                 {
                     result.append(textComponent.contents());
-                } else
-                {
-                    throw new RuntimeException("Узел не является TextComponent!");
                 }
             }
-
-        } else
-        {
-            // рекурсия вплоть до TextComponent
         }
+
         return result.toString();
     }
 
@@ -76,6 +80,9 @@ public class InnerScroll extends ScrollPane implements Observer
         if (components.size() == 1)
         {
             TextComponent c = components.iterator().next();
+
+            setFitToHeight(true);
+
             if (c instanceof Node node)
             {
                 setContent(node);
@@ -92,6 +99,9 @@ public class InnerScroll extends ScrollPane implements Observer
                 throw new RuntimeException("Узел не является наблюдаемым!");
             }
             return;
+        } else
+        {
+            setFitToHeight(false);
         }
 
         Collection<Node> nodes = new ArrayList<>();
@@ -99,6 +109,11 @@ public class InnerScroll extends ScrollPane implements Observer
         for (TextComponent component : components)
         {
             if (component.contents().isEmpty()) continue;
+
+            if (component instanceof Resizable r)
+            {
+                r.design(getWidth() - 5, 500);
+            }
 
             if (component instanceof Node node)
             {
@@ -119,6 +134,7 @@ public class InnerScroll extends ScrollPane implements Observer
 
         VBox compose = new VBox(5);
         compose.getChildren().addAll(nodes);
+        compose.getChildren().add(new Region()); // отступ для последнего элемента.
         setContent(compose);
     }
 }

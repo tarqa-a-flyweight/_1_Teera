@@ -6,7 +6,7 @@ public class TextComponentFactory
 {
     public static TextComponentFactory createFactory()
     {
-        return new DecorTextZoneFactory();
+        return new TextZoneFactory();
     }
 
     public TextArea createTextArea(String contents)

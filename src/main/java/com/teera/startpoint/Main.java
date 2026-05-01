@@ -13,14 +13,13 @@ import com.teera.handlers.buttonHandlers.SaveButtonHandler;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
  * Teera
- * @version 0.2 08-04-2026
+ * @version 0.3 01-05-2026
  * @author tarqa-a-flyweight
  */
 
@@ -54,7 +53,7 @@ public class Main extends Application
          */
 
         stage.setTitle("Teera");
-        stage.setResizable(false);
+        //stage.setResizable(false);
         GridPane nodeRoot = new GridPane(10, 10);
 
         Scene scene = new Scene(nodeRoot, 700,
@@ -72,6 +71,8 @@ public class Main extends Application
         TabZoneFactory factory = TabZoneFactory.createFactory();
         TabZone tabZone = factory.createTabPane();
         tabZone.postContents("@@@");
+
+        tabZone.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         // Handlers
         OpenButtonHandler openButtonHandler = new OpenButtonHandler();
@@ -93,6 +94,19 @@ public class Main extends Application
         saveButtonHandler.visit(tabZone);
         saveButtonHandler.visit(filestore);
         saveButtonHandler.visit(saveAsDialog);
+
+        ColumnConstraints column = new ColumnConstraints();
+        column.setHgrow(Priority.ALWAYS);
+
+        nodeRoot.getColumnConstraints().add(column);
+
+        RowConstraints row1 = new RowConstraints();
+        row1.setVgrow(Priority.NEVER);
+
+        RowConstraints row2 = new RowConstraints();
+        row2.setVgrow(Priority.ALWAYS);
+
+        nodeRoot.getRowConstraints().addAll(new RowConstraints(), row1, row2);
 
         nodeRoot.add(buttonsBox, 0, 1);
         nodeRoot.add(tabZone, 0, 2);

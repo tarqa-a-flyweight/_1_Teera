@@ -7,6 +7,6 @@ public class TextZoneFactory extends TextComponentFactory
     @Override
     public TextArea createTextArea(String contents)
     {
-        return new TextZone(contents);
+        return new VFillTextZone(contents);
     }
 }
