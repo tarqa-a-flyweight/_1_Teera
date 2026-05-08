@@ -22,6 +22,4 @@ The project is based on Java 17, so if you get a compilation error, please low t
 #### Gallery
 <img src="attachments/2.png" width="600">
 
----
-
 <img src="attachments/4.png" width="600">
