@@ -31,7 +31,7 @@ public class ParagraphChunker extends ChunkingStrategy
         for (int i = 0; i < paras.length; i++)
         {
             para = para.concat(paras[i]);
-            para += "\n";
+            if (i != paras.length - 1) para += "\n";
 
             if (para.length() > CHUNK_SIZE)
             {

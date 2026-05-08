@@ -1,10 +1,10 @@
 package com.teera.graphics.buttons;
 
-public class OpenButton extends ObservableButton
+public class CreateButton extends ObservableButton
 {
-    public OpenButton()
+    public CreateButton()
     {
-        super("Open");
+        super("Create");
 
         setOnAction(actionEvent -> alert());
     }

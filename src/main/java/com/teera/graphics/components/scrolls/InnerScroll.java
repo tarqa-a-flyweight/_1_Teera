@@ -22,7 +22,6 @@ public class InnerScroll extends ScrollPane implements Observer
 {
     public InnerScroll(String contents)
     {
-        //setFitToHeight(true);
         setFitToWidth(true);
 
         ChunkingStrategyFactory chunkingStrategyFactory = ChunkingStrategyFactory.createFactory();

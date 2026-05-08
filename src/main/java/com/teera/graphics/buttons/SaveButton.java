@@ -4,7 +4,7 @@ public class SaveButton extends ObservableButton
 {
     public SaveButton()
     {
-        super("<Сохранить>");
+        super("Save");
 
         setOnAction(actionEvent -> alert());
     }

@@ -14,6 +14,8 @@ abstract public class ObservableButton extends Button implements Observable
     public ObservableButton(String s)
     {
         super(s);
+        setFocusTraversable(false);
+        setPrefSize(70, 10);
     }
 
     // Метод не предназначен для переопределения в потомках

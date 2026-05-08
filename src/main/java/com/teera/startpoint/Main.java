@@ -1,15 +1,12 @@
 package com.teera.startpoint;
 
-import com.teera.graphics.buttons.ObservableButton;
-import com.teera.graphics.buttons.OpenButton;
-import com.teera.graphics.buttons.SaveButton;
+import com.teera.graphics.buttons.*;
 import com.teera.graphics.dialogs.*;
 import com.teera.graphics.panes.TabZone;
 import com.teera.graphics.panes.TabZoneFactory;
 import com.teera.handlers.FileStore;
 import com.teera.handlers.FileStoreFactory;
-import com.teera.handlers.buttonHandlers.OpenButtonHandler;
-import com.teera.handlers.buttonHandlers.SaveButtonHandler;
+import com.teera.handlers.buttonHandlers.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -19,7 +16,7 @@ import java.io.IOException;
 
 /**
  * Teera
- * @version 0.3 01-05-2026
+ * @version 0.4 08-05-2026
  * @author tarqa-a-flyweight
  */
 
@@ -28,32 +25,7 @@ public class Main extends Application
     @Override
     public void start(Stage stage) throws IOException
     {
-        /*
-        После компоновки:
-        - *Отладить программу (должна полностью соответствовать требованиям)
-        - Почистить код от сторонних файлов (и неиспользуемых пакетов)
-        - Отметить версию как 1.0 (стабильная)
-
-        - Обернуть программу в JAR
-        - Запустить редактор как настольное приложение (должна запускаться для Java 17)
-        - Повторно отладить как настольное приложение (оптимизация, переносимость)
-
-        - Написать README.md для запуска как настольное приложение
-            (пояснение, что учебный проект для закрепления материала книг
-            Шилдта, Хорстаммна (1 том, начало второго тома), а также паттернов GoF)
-        - Опубликовать проект на GitHub
-        - Отредактировать конспект по проекту (особенно о применении паттернов,
-        обобщений, потоков ввода-вывода, диалоговых окон и панели вкладок)
-
-        Дополнительно (но не обязательно):
-        - Запустить проект для Java 11 и ниже
-        - Добавить другие графические компоненты: списки, таблицы, графики
-        - Добавить новые оформления редактора
-        - Добавить поддержку английского и французского
-         */
-
         stage.setTitle("Teera");
-        //stage.setResizable(false);
         GridPane nodeRoot = new GridPane(10, 10);
 
         Scene scene = new Scene(nodeRoot, 700,
@@ -62,11 +34,14 @@ public class Main extends Application
 
         ObservableButton open = new OpenButton();
         ObservableButton save = new SaveButton();
+        CreateButton create = new CreateButton();
+        CloseButton close = new CloseButton();
+        SaveAsButton saveAs = new SaveAsButton();
 
         // Compose
         HBox buttonsBox = new HBox(10);
         Label sidePlaceLabel = new Label();
-        buttonsBox.getChildren().addAll(sidePlaceLabel, open, save);
+        buttonsBox.getChildren().addAll(sidePlaceLabel, create, open, close, save, saveAs);
 
         TabZoneFactory factory = TabZoneFactory.createFactory();
         TabZone tabZone = factory.createTabPane();
@@ -77,8 +52,15 @@ public class Main extends Application
         // Handlers
         OpenButtonHandler openButtonHandler = new OpenButtonHandler();
         SaveButtonHandler saveButtonHandler = new SaveButtonHandler();
+        CreateButtonHandler createButtonHandler = new CreateButtonHandler();
+        CloseButtonHandler closeButtonHandler = new CloseButtonHandler();
+        SaveAsButtonHandler saveAsButtonHandler = new SaveAsButtonHandler();
+
         open.add(openButtonHandler);
         save.add(saveButtonHandler);
+        create.add(createButtonHandler);
+        close.add(closeButtonHandler);
+        saveAs.add(saveAsButtonHandler);
 
         FileStoreFactory fileStoreFactory = FileStoreFactory.createFactory();
         FileStore filestore = fileStoreFactory.createFileStore();
@@ -94,6 +76,15 @@ public class Main extends Application
         saveButtonHandler.visit(tabZone);
         saveButtonHandler.visit(filestore);
         saveButtonHandler.visit(saveAsDialog);
+
+        createButtonHandler.visit(tabZone);
+
+        closeButtonHandler.visit(tabZone);
+        closeButtonHandler.visit(new UnsaveDialogStrategyFactory().createUnsaveDialog());
+        closeButtonHandler.visit(filestore);
+
+        saveAsButtonHandler.visit(saveAsDialog);
+        saveAsButtonHandler.visit(tabZone);
 
         ColumnConstraints column = new ColumnConstraints();
         column.setHgrow(Priority.ALWAYS);

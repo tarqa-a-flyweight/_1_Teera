@@ -1,8 +1,6 @@
 package com.teera.handlers.buttonHandlers;
 
-import com.teera.files.IOStrategyFactory;
-import com.teera.files.OutputStrategy;
-import com.teera.graphics.dialogs.SaveAsDialogStrategy;
+import com.teera.graphics.dialogs.UnsaveDialogStrategy;
 import com.teera.graphics.panes.TabZone;
 import com.teera.handlers.FileStore;
 import com.teera.handlers.patterns.Observable;
@@ -13,31 +11,30 @@ import com.teera.handlers.patterns.Visitor;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 import static com.teera.debug.Logmas.LOGGER;
 
-public class SaveButtonHandler implements Observer, Visitor
+public class CloseButtonHandler implements Observer, Visitor
 {
-    // SaveAsDialogStrategy OR TabZone OR Filestore
+    // UnsaveDialog OR TabZone
     private Collection<Visited> visitTargets = new ArrayList<>();
 
     @Override
     public void update(Observable observable)
     {
         // Получаем текущее содержание
-        String currentContent = "";
         Path currentPath = null;
+        String currentContent = null;
 
         for (Visited visitTarget : visitTargets)
         {
             if (visitTarget instanceof TabZone tabZone)
             {
-                Path name = Path.of(tabZone.currentTab().getText());
-
-                if (name.isAbsolute())
+                try
                 {
-                    currentPath = name;
+                    currentPath = Path.of(tabZone.currentTab().getText());
+                } catch (Exception e)
+                {
                 }
 
                 currentContent = tabZone.getContents();
@@ -45,23 +42,11 @@ public class SaveButtonHandler implements Observer, Visitor
             }
         }
 
-        if (currentPath == null)
+        String savedContent = null;
+
+        if (currentPath != null)
+        // если путь известен, получаем содержимое последнего сохранения
         {
-
-            for (Visited visitTarget : visitTargets)
-            {
-                if (visitTarget instanceof SaveAsDialogStrategy saveAsDialog)
-                {
-                    currentPath = saveAsDialog.saveAsDialog();
-                    break;
-                }
-            }
-            if (currentPath == null) return;
-
-        } else // если путь известен, получаем содержимое последнего сохранения
-        {
-            String savedContent = null;
-
             // Получаем сохраненные данные
             for (Visited visitTarget : visitTargets)
             {
@@ -72,23 +57,23 @@ public class SaveButtonHandler implements Observer, Visitor
                     break;
                 }
             }
-
-            if (currentContent.equals(savedContent)) return;
         }
 
-        // Если есть содержимое, файл и несохраненные изменения, то записываем
-        IOStrategyFactory factory = IOStrategyFactory.createFactory();
-        OutputStrategy out = factory.createOutputStrategy();
-
-        out.write(currentContent, currentPath);
 
         for (Visited visitTarget : visitTargets)
         {
-            if (visitTarget instanceof FileStore fileStore)
+            if (visitTarget instanceof UnsaveDialogStrategy uds)
             {
-                // Можно получать путь
-                fileStore.putContent(currentPath, currentContent);
-                break;
+                if (currentContent == null) currentContent = "";
+                if (savedContent == null) savedContent = "";
+
+                if (currentContent.equals(savedContent))
+                {
+                    break;
+                } else
+                {
+                    if (!uds.confirm()) return;
+                }
             }
         }
 
@@ -96,10 +81,11 @@ public class SaveButtonHandler implements Observer, Visitor
         {
             if (visitTarget instanceof TabZone tabZone)
             {
-                tabZone.currentTab().setText(currentPath.toString());
+                tabZone.getTabs().remove(tabZone.currentTab());
                 break;
             }
         }
+
     }
 
     @Override

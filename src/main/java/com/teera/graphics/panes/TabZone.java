@@ -22,6 +22,11 @@ public class TabZone extends TabPane implements Visited
         (postContents, getContents и др.)
      */
 
+    public TabZone()
+    {
+        setFocusTraversable(false);
+    }
+
     @Override
     public void addVisitor(Visitor visitor)
     {
@@ -48,7 +53,7 @@ public class TabZone extends TabPane implements Visited
 
         if (s.length == 0)
         {
-            newTab.setText("<Безымянный>");
+            newTab.setText("Unnamed File");
         } else
         {
             newTab.setText(s[0]);
@@ -92,5 +97,4 @@ public class TabZone extends TabPane implements Visited
         }
         return currentTab;
     }
-
 }

@@ -13,13 +13,16 @@ import java.util.Collection;
 public class OpenDialogStrategy implements Visited
 {
     private Window window;
-    private FileChooser fileChooser = new FileChooser();
+    private FileChooser fileChooser;
 
     private Collection<Visitor> visitors = new ArrayList<>();
 
     public OpenDialogStrategy(Window window)
     {
         this.window = window;
+        this.fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(".txt","*.txt");
+        fileChooser.getExtensionFilters().add(filter);
     }
 
     public Path openDialog()

@@ -1,2 +1,2 @@
 # Teera
-Basic text editor (study project)
+A simple editor (study project) for working with text files.

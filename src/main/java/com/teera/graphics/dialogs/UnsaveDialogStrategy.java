@@ -18,13 +18,13 @@ public class UnsaveDialogStrategy implements Visited
     public boolean confirm()
     {
         Dialog<Boolean> dialog = new Dialog<>();
+
         DialogPane dialogPane = dialog.getDialogPane();
 
-        dialogPane.setContent(new Label("Не сохранять файл?"));
-        dialogPane.setPrefSize(300, 150);
+        dialogPane.setContentText("Don't save changes?");
 
-        ButtonType confirm = new ButtonType("Не сохранять");
-        ButtonType cancel = new ButtonType("Отмена");
+        ButtonType confirm = new ButtonType("Ok");
+        ButtonType cancel = new ButtonType("Cancel");
 
         dialogPane.getButtonTypes().addAll(confirm, cancel);
         dialog.setDialogPane(dialogPane);
